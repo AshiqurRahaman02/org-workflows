@@ -31,7 +31,7 @@ jobs:
 
       - name: Create or Update PR to uat
         env:
-          SECRET_GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           COMMIT_MSG=$(git log -1 --format=%s)
           if [[ -z "$EXISTING_PR" ]]; then
@@ -53,14 +53,14 @@ jobs:
       - name: Check for Existing PR to main
         id: check_main_pr
         env:
-          SECRET_GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           EXISTING_MAIN_PR=$(gh pr list --state open --base main --json number,headRefName --jq '.[] | select(.headRefName == "uat") | .number')
           echo "EXISTING_MAIN_PR=$EXISTING_MAIN_PR" >> $GITHUB_ENV
 
       - name: Create PR from uat to main
         env:
-          SECRET_GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [[ -z "$EXISTING_MAIN_PR" ]]; then
             gh pr create --base main --head uat --title "$PR_TITLE" --body "Merging changes from uat to main"
