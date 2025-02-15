@@ -7,7 +7,7 @@ on:
         required: true
         type: string
     secrets:
-      github_token:
+      SECRET_GITHUB_TOKEN:
         required: true
 
 jobs:
@@ -24,14 +24,14 @@ jobs:
       - name: Check for Existing PR to uat
         id: check_pr
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          SECRET_GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
         run: |
           EXISTING_PR=$(gh pr list --state open --base uat --json number,headRefName --jq '.[] | select(.headRefName == "${{ env.BRANCH_NAME }}") | .number')
           echo "EXISTING_PR=$EXISTING_PR" >> $GITHUB_ENV
 
       - name: Create or Update PR to uat
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          SECRET_GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
         run: |
           COMMIT_MSG=$(git log -1 --format=%s)
           if [[ -z "$EXISTING_PR" ]]; then
@@ -53,14 +53,14 @@ jobs:
       - name: Check for Existing PR to main
         id: check_main_pr
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          SECRET_GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
         run: |
           EXISTING_MAIN_PR=$(gh pr list --state open --base main --json number,headRefName --jq '.[] | select(.headRefName == "uat") | .number')
           echo "EXISTING_MAIN_PR=$EXISTING_MAIN_PR" >> $GITHUB_ENV
 
       - name: Create PR from uat to main
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          SECRET_GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
         run: |
           if [[ -z "$EXISTING_MAIN_PR" ]]; then
             gh pr create --base main --head uat --title "$PR_TITLE" --body "Merging changes from uat to main"
