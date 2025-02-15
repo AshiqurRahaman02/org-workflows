@@ -24,7 +24,7 @@ jobs:
       - name: Check for Existing PR to uat
         id: check_pr
         env:
-          GH_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           EXISTING_PR=$(gh pr list --state open --base uat --json number,headRefName --jq '.[] | select(.headRefName == "${{ env.BRANCH_NAME }}") | .number')
           echo "EXISTING_PR=$EXISTING_PR" >> $GITHUB_ENV
